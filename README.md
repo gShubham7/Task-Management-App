@@ -24,13 +24,14 @@ The project is a Task Manager application built using React, Redux for state man
 ## Usage
 
 1. Start the development server: `npm start`
-2. Open your browser and go to `http://localhost:3000` to view the application.
+2. Open your browser and go to `http://localhost:5173/` to view the application.
 
 ## Technologies Used
 
 - React
 - Redux
 - Tailwind CSS
+- Jest Unit Testing
 
 ## Project Structure
 
@@ -43,7 +44,11 @@ project-name/
 │
 ├── src/
 │   ├── components/
+│   │   ├── Navbar.test.jsx
+│   │   ├── Navbar.jsx
+│   │   ├── Tasklist.test.jsx
 │   │   ├── Tasklist.jsx
+│   │   ├── Taskform.test.jsx
 │   │   ├── Taskform.jsx
 │   │   └── ...
 │   ├── redux/
