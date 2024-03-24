@@ -41,7 +41,7 @@ The project is a Task Manager application built using React, Redux for state man
 ## Project Structure
 
 ```
-project-name/
+Task-Management-App/
 │
 ├── public/
 │   ├── index.html
