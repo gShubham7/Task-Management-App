@@ -11,6 +11,7 @@ The project is a Task Manager application built using React, Redux for state man
 - Add new tasks with title, description, due date, and status (pending/completed).
 - Edit existing tasks including title, description, and due date.
 - Delete tasks.
+- Tasks can be sorted by due date (ascending/descending) and filtered by status (completed/pending).
 - Mark tasks as complete or pending.
 - Responsive design using Tailwind CSS.
 
@@ -20,6 +21,10 @@ The project is a Task Manager application built using React, Redux for state man
 2. Navigate to the project directory: `cd Task-Management-App/`
 3. Install dependencies: `npm install`
 4. Run the project: `npm run dev`
+
+## Test
+
+1. Run jest test: `npm test`
 
 ## Usage
 
@@ -44,13 +49,14 @@ project-name/
 │
 ├── src/
 │   ├── components/
-│   │   ├── Navbar.test.jsx
+│   │   ├── EditTaskModal.jsx
+│   │   ├── EditTaskModal.test.jsx
 │   │   ├── Navbar.jsx
-│   │   ├── Tasklist.test.jsx
-│   │   ├── Tasklist.jsx
-│   │   ├── Taskform.test.jsx
+│   │   ├── Navbar.test.jsx
 │   │   ├── Taskform.jsx
-│   │   └── ...
+│   │   ├── Taskform.test.jsx
+│   │   ├── Tasklist.jsx
+│   │   ├── Tasklist.test.jsx
 │   ├── redux/
 |   |   ├── actions.js
 │   │   ├── reducers.js

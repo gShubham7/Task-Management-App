@@ -1,16 +1,17 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteTask, toggleStatus, editTask } from "../redux/actions";
+import EditTaskModal from "./EditTaskModal";
 
 const Tasklist = () => {
   const tasks = useSelector((state) => state.tasks);
   const dispatch = useDispatch();
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editedTask, setEditedTask] = useState({});
-  const [updatedTitle, setUpdatedTitle] = useState("");
-  const [updatedDescription, setUpdatedDescription] = useState("");
-  const [updatedDueDate, setUpdatedDueDate] = useState("");
+  const [updateTask, setUpdateTask] = useState({});
   const [error, setError] = useState("");
+  const [sortBy, setSortBy] = useState(""); // State for sorting by due date
+  const [filterStatus, setFilterStatus] = useState("all"); // State for filtering by status
 
   const handleDelete = (taskId) => {
     dispatch(deleteTask(taskId));
@@ -22,9 +23,7 @@ const Tasklist = () => {
 
   const handleOpenEditModal = (task) => {
     setEditedTask(task);
-    setUpdatedTitle(task.title);
-    setUpdatedDescription(task.description);
-    setUpdatedDueDate(task.dueDate);
+    setUpdateTask(task);
     setEditModalOpen(true);
   };
 
@@ -33,38 +32,81 @@ const Tasklist = () => {
     setError("");
   };
 
+  const handleUpdateTask = (e) => {
+    const { name, value } = e.target;
+    setUpdateTask({ ...updateTask, [name]: value });
+  };
+
   const handleEditTask = () => {
     if (
-      !updatedTitle.trim() ||
-      !updatedDescription.trim() ||
-      !updatedDueDate.trim()
+      !updateTask.title.trim() ||
+      !updateTask.description.trim() ||
+      !updateTask.dueDate.trim()
     ) {
       setError("All fields are required");
       return;
     }
     const updatedTask = {
       ...editedTask,
-      title: updatedTitle,
-      description: updatedDescription,
-      dueDate: updatedDueDate,
+      title: updateTask.title,
+      description: updateTask.description,
+      dueDate: updateTask.dueDate,
     };
     dispatch(editTask(editedTask.id, updatedTask));
     handleCloseEditModal();
   };
 
-  const todayDate = new Date().toISOString().split("T")[0];
+  const sortedTasks = [...tasks].sort((a, b) => {
+    if (sortBy === "asc") return new Date(a.dueDate) - new Date(b.dueDate);
+    else if (sortBy === "desc")
+      return new Date(b.dueDate) - new Date(a.dueDate);
+    return 0;
+  });
+
+  const filteredTasks = sortedTasks.filter((task) => {
+    if (filterStatus === "all") return true;
+    return task.status === filterStatus;
+  });
 
   return (
     <div className="mt-4">
-      <h2 className="text-xl font-bold mb-4">Task List</h2>
+      <div className="flex justify-between mb-4">
+        <h2 className="text-xl font-bold">
+          {tasks && tasks.length ? "Task List" : "Add Some Tasks..."}
+        </h2>
+        <div>
+          <label className="mr-2">Sort By Due Date:</label>
+          <select
+            data-testid="sort-by-due-date"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="px-2 py-1 border border-gray-300 rounded"
+          >
+            <option value="">None</option>
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+          <label className="ml-4 mr-2">Filter By Status:</label>
+          <select
+            data-testid="filter-by-status"
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="px-2 py-1 border border-gray-300 rounded"
+          >
+            <option value="all">All</option>
+            <option value="completed">Completed</option>
+            <option value="pending">Pending</option>
+          </select>
+        </div>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {tasks.map((task) => (
+        {filteredTasks.map((task) => (
           <div
             key={task.id}
             className="bg-white rounded-lg shadow-md overflow-hidden transition duration-300 ease-in-out transform hover:scale-105"
           >
             <div className="px-4 py-3 bg-gray-200 border-b flex justify-between items-center">
-              <h3 className="text-lg font-bold text-gray-800">{task.title}</h3>{" "}
+              <h3 className="text-lg font-bold text-gray-800">{task.title}</h3>
               <h3
                 className={`text-sm font-bold ${
                   task.status === "completed"
@@ -78,7 +120,9 @@ const Tasklist = () => {
             <div className="p-4">
               <p className="text-gray-700 mb-2">{task.description}</p>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-gray-600">{task.dueDate}</span>
+                <span className="text-sm font-bold text-gray-600">
+                  Due Date: {task.dueDate}
+                </span>
               </div>
             </div>
             <div className="p-4 flex justify-end">
@@ -112,46 +156,13 @@ const Tasklist = () => {
         ))}
       </div>
       {editModalOpen && (
-        <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-4 rounded shadow-lg">
-            <h2 className="text-xl font-bold mb-4">Edit Task</h2>
-            {error && <div className="text-red-600 mb-2">{error}</div>}
-            <input
-              type="text"
-              placeholder="Title"
-              value={updatedTitle}
-              onChange={(e) => setUpdatedTitle(e.target.value)}
-              className="border border-gray-300 px-2 py-1 mb-2 w-full rounded transition duration-300 ease-in-out focus:outline-none focus:border-blue-500"
-            />
-            <textarea
-              placeholder="Description"
-              value={updatedDescription}
-              onChange={(e) => setUpdatedDescription(e.target.value)}
-              className="border border-gray-300 px-2 py-1 mb-2 w-full rounded transition duration-300 ease-in-out focus:outline-none focus:border-blue-500"
-            ></textarea>
-            <input
-              type="date"
-              value={updatedDueDate}
-              onChange={(e) => setUpdatedDueDate(e.target.value)}
-              min={todayDate}
-              className="border border-gray-300 px-2 py-1 mb-2 w-full rounded transition duration-300 ease-in-out focus:outline-none focus:border-blue-500"
-            />
-            <div className="flex justify-end">
-              <button
-                className="bg-blue-500 text-white px-4 py-2 rounded mr-2 transition duration-300 ease-in-out hover:bg-blue-600"
-                onClick={handleEditTask}
-              >
-                Save
-              </button>
-              <button
-                className="bg-gray-500 text-white px-4 py-2 rounded transition duration-300 ease-in-out hover:bg-gray-600"
-                onClick={handleCloseEditModal}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+        <EditTaskModal
+          updateTask={updateTask}
+          error={error}
+          handleUpdateTask={handleUpdateTask}
+          handleEditTask={handleEditTask}
+          handleCloseEditModal={handleCloseEditModal}
+        />
       )}
     </div>
   );

@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
@@ -7,7 +6,7 @@ const Navbar = () => {
       <div className="container mx-auto flex justify-between items-center">
         <Link
           to="/"
-          className="text-3xl font-bold tracking-wider hover:text-purple-400 transition duration-300"
+          className="text-xl md:text-3xl font-bold tracking-wider hover:text-purple-400 transition duration-300"
         >
           Task Manager
         </Link>

@@ -42,7 +42,7 @@ const TaskForm = () => {
   };
 
   return (
-    <div className="mt-4 w-1/2 m-auto">
+    <div className="mt-4 w-3/4 md:w-1/2 m-auto">
       <h2 className="text-xl font-bold mb-4">Add New Task</h2>
       <form
         onSubmit={handleSubmit}
